@@ -7,10 +7,6 @@ plugins {
     id 'idea'
 }
 
-// Apply the java plugin to add support for Java
-//apply plugin: 'java'
-//apply plugin: 'idea'
-
 // In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
@@ -26,6 +22,7 @@ dependencies {
     provided 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+    compile 'org.twitter4j:twitter4j-core:4.0.6'
     testCompile 'junit:junit:4.12'
 }
 
@@ -43,7 +40,7 @@ aws {
     region = 'ap-southeast-2'
 }
 
-def doUpload(task, String name, String handler, String description = '') {
+def doUpload(task, String name, String handler, String description = '', Map environment = [:]) {
     task.role = "arn:aws:iam::${aws.accountId}:role/lambda"
     task.zipFile = jar.archivePath
     task.memorySize = 128
@@ -52,11 +49,22 @@ def doUpload(task, String name, String handler, String description = '') {
     task.functionName = name
     task.handler = "com.mannanlive.handler.${handler}::handleRequest"
     task.description = description
+    task.environment = environment
 }
 
 // migrate or create the function to AWS
 task migrateCryptoValue(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
     doUpload delegate, 'crypto-value', 'MarketValueHandler', 'Get the current crypto market value.'
+}
+
+task migrateTwitter(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
+    Map environment = [
+            consumerKey:       'key',
+            consumerSecret:    'secret',
+            accessToken:       'token',
+            accessTokenSecret: 'tokenSecret'
+    ]
+    doUpload delegate, 'tweet-crypto-value', 'TweetHandler', 'Tweets the current crypto market value.', environment
 }
 
 task refreshAll << {
