@@ -1,5 +1,8 @@
 package com.mannanlive.domain;
 
+import com.mannanlive.btcmarkets.domain.Currency;
+import com.mannanlive.btcmarkets.domain.Instrument;
+import com.mannanlive.btcmarkets.domain.marketdata.MarketValue;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,8 +12,8 @@ public class MarketValueTweetTest {
     @Test
     public void getStatus() {
         MarketValue marketValue = new MarketValue();
-        marketValue.setCurrency("AUD");
-        marketValue.setInstrument("BTC");
+        marketValue.setCurrency(Currency.AUD);
+        marketValue.setInstrument(Instrument.BTC);
         marketValue.setLastPrice(23456.23f);
         marketValue.setTimestamp(1476243360);
 

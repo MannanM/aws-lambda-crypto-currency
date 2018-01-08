@@ -22,6 +22,8 @@ dependencies {
     provided 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+    compile 'org.apache.httpcomponents:httpclient:4.5.4'
+    compile 'software.amazon.awssdk:dynamodb:2.0.0-preview-7'
     compile 'org.twitter4j:twitter4j-core:4.0.6'
     testCompile 'junit:junit:4.12'
 }
@@ -43,7 +45,7 @@ aws {
 def doUpload(task, String name, String handler, String description = '', Map environment = [:]) {
     task.role = "arn:aws:iam::${aws.accountId}:role/lambda"
     task.zipFile = jar.archivePath
-    task.memorySize = 128
+    task.memorySize = 256
     task.timeout = 60
     task.runtime = 'java8'
     task.functionName = name
@@ -54,7 +56,11 @@ def doUpload(task, String name, String handler, String description = '', Map env
 
 // migrate or create the function to AWS
 task migrateCryptoValue(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
-    doUpload delegate, 'crypto-value', 'MarketValueHandler', 'Get the current crypto market value.'
+    doUpload delegate, 'get-crypto-value', 'MarketValueHandler', 'Get the current crypto market value.'
+}
+
+task migratePersistCryptoValue(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
+    doUpload delegate, 'crypto-value', 'PersistMarketValueHandler', 'Get all current crypto market value and save to DynamoDB.'
 }
 
 task migrateTwitter(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {

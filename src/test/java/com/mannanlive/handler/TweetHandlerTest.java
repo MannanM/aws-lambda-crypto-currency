@@ -1,6 +1,8 @@
 package com.mannanlive.handler;
 
-import com.mannanlive.domain.Market;
+import com.mannanlive.btcmarkets.domain.Currency;
+import com.mannanlive.btcmarkets.domain.Instrument;
+import com.mannanlive.btcmarkets.domain.Market;
 import org.junit.Ignore;
 import org.junit.Test;
 import twitter4j.Twitter;
@@ -16,7 +18,7 @@ public class TweetHandlerTest {
     @Test
     @Ignore
     public void handleRequest() {
-        Market marketValue = new Market("AUD", "BTC");
+        Market marketValue = new Market(Instrument.BTC, Currency.AUD);
         new TweetHandler().handleRequest(marketValue, null);
     }
 
