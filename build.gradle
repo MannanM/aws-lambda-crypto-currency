@@ -24,6 +24,7 @@ dependencies {
     compile 'com.mannanlive:btcmarkets-java:0.1'
     compile 'org.twitter4j:twitter4j-core:4.0.6'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.easymock:easymock:3.5.1'
 }
 
 jar {
@@ -59,6 +60,14 @@ task migrateCryptoValue(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
 
 task migratePersistCryptoValue(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
     doUpload delegate, 'crypto-value', 'PersistMarketValueHandler', 'Get all current crypto market value and save to DynamoDB.'
+}
+
+task migrateStopLoss(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {
+    Map environment = [
+            btcApi:     'publicApiKey',
+            btcPrivate: 'privateApiKey'
+    ]
+    doUpload delegate, 'stop-loss', 'StopLossHandler', 'Gets & saves current crypto value and checks for stop loss.', environment
 }
 
 task migrateTwitter(type: AWSLambdaMigrateFunctionTask, dependsOn: jar) {

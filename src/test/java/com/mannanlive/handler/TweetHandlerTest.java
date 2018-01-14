@@ -42,7 +42,7 @@ public class TweetHandlerTest {
                 }
             } catch (TwitterException te) {
                 if (401 == te.getStatusCode()) {
-                    System.out.println("Unable to get the access token.");
+                    System.out.println("Unable to getAll the access token.");
                 } else {
                     te.printStackTrace();
                 }
